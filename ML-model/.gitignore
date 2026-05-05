@@ -1,0 +1,12 @@
+# Données générées
+data/processed/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Modèles ML
+*.pkl
+
+# fichiers temporaires
+*.log
