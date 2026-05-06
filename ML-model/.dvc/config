@@ -1,0 +1,4 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/Saadiaboussiar/Smart-Irrigation-Project.dvc
