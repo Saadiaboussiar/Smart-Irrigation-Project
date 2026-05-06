@@ -8,3 +8,14 @@ stages:
       - data/sensor_data/train.csv
       - data/sensor_data/test.csv
       - data/sensor_data/encoders.json
+  feature_selection:
+    cmd: python preprocessing/feature_selection.py
+    deps:
+      - preprocessing/feature_selection.py
+      - data/sensor_data/train.csv
+      - data/sensor_data/test.csv
+    outs:
+      - data/sensor_data/train_selected.csv
+      - data/sensor_data/test_selected.csv
+      - data/sensor_data/selected_features.json
+      - models/feature_importance.png
