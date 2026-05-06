@@ -22,25 +22,20 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-""" 
-RAW_DATA_PATH — le chemin vers le fichier CSV brut d'origine.
-
-PROCESSED_DIR — le dossier où seront sauvegardés tous les fichiers traités.
-
-ENCODERS_PATH — le chemin du fichier JSON qui stocke les encodages des variables catégorielles.
-
-TRAIN_PATH — le chemin du fichier CSV d'entraînement après le split.
-
-TEST_PATH — le chemin du fichier CSV de test après le split."""
-
 # ──────────────────────────────────────────────
 # Configuration
 # ──────────────────────────────────────────────
-RAW_DATA_PATH = Path("data/irrigation_prediction.csv")
-PROCESSED_DIR = Path("data/processed")
+# Racine du projet ML-model
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Paths
+RAW_DATA_PATH = BASE_DIR / "data" / "irrigation_prediction.csv"
+PROCESSED_DIR = BASE_DIR / "data" / "sensor_data"
+
 ENCODERS_PATH = PROCESSED_DIR / "encoders.json"
 TRAIN_PATH    = PROCESSED_DIR / "train.csv"
 TEST_PATH     = PROCESSED_DIR / "test.csv"
+
 
 TARGET_RAW    = "Irrigation_Need"   # colonne originale  : Low / Medium / High
 TARGET        = "besoin_eau"        # cible binaire       : 0 / 1
@@ -250,54 +245,18 @@ def feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-
-
-
-def compute_correlation(df: pd.DataFrame) -> pd.Series:
+def select_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Calcule la corrélation de chaque feature avec la cible besoin_eau.
-    Sauvegarde les résultats dans data/processed/correlation.json
-    pour garder une trace et partager avec l'équipe.
+    Sélectionne les colonnes finales pour le training.
+    On conserve TARGET_RAW pour pouvoir faire une classification
+    multi-classe plus tard si besoin.
     """
+    feature_cols = NUMERICAL_COLS + CATEGORICAL_COLS + [
+        "stress_hydrique", "pluie_par_hectare", "sol_chaud_sec",
+        TARGET,
+    ]
+    return df[feature_cols]
 
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)  
-    log.info("Calcul de la corrélation avec la cible...")
-    
-    
-    corr = df.corr()[TARGET].drop(TARGET).sort_values(ascending=False)
-
-    
-    
-    # afficher dans le terminal
-    log.info("\n" + corr.round(3).to_string())
-    
-    # sauvegarder dans un fichier json
-    corr_dict = corr.round(3).to_dict()
-    with open(PROCESSED_DIR / "correlation.json", "w") as f:
-        json.dump(corr_dict, f, indent=2)
-    
-    log.info("  ✓ Corrélation sauvegardée → data/processed/correlation.json")
-    return corr
-
-
-
-def drop_low_correlation(df: pd.DataFrame, corr: pd.Series, threshold: float = 0.05) -> pd.DataFrame:
-    """
-    Supprime les colonnes dont la corrélation absolue
-    avec la cible est inférieure au seuil (défaut 0.05).
-    """
-    log.info(f"Suppression des colonnes avec corrélation < {threshold}...")
-    
-    cols_to_drop = corr[corr.abs() < threshold].index.tolist()
-    
-    # ne jamais supprimer la cible ou Irrigation_Need
-    cols_to_drop = [c for c in cols_to_drop if c not in [TARGET, TARGET_RAW]]
-    
-    df = df.drop(columns=cols_to_drop)
-    
-    log.info(f"  ✓ Colonnes supprimées : {cols_to_drop}")
-    log.info(f"  ✓ Colonnes gardées   : {df.columns.tolist()}")
-    return df
 
 def split_and_save(
     df: pd.DataFrame,
@@ -352,11 +311,9 @@ def run_pipeline() -> None:
     df = remove_outliers(df)
     df = create_binary_target(df)
     df, encoders = encode_categoricals(df)
-    df = df.drop(columns=["Irrigation_Type", "Water_Source", TARGET_RAW], errors="ignore")
     df = feature_engineering(df)
-    corr = compute_correlation(df)
-    df   = drop_low_correlation(df, corr, threshold=0.05)
-    
+    df = select_features(df)
+
     log.info(f"Dataset final : {df.shape[0]:,} lignes × {df.shape[1]} colonnes")
     split_and_save(df, encoders, TRAIN_PATH, TEST_PATH, ENCODERS_PATH)
 

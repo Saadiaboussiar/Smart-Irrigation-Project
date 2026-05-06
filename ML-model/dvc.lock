@@ -1,0 +1,26 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python preprocessing/prepare.py
+    deps:
+    - path: data/irrigation_prediction.csv
+      hash: md5
+      md5: c96c63c7e82198cefba9943158c7782b
+      size: 1199515
+    - path: preprocessing/prepare.py
+      hash: md5
+      md5: 3ab270e27570449c74295bf0a4d7d688
+      size: 11311
+    outs:
+    - path: data/sensor_data/encoders.json
+      hash: md5
+      md5: 6f5ac74e7dd4539d7211710ccc0e9fb6
+      size: 564
+    - path: data/sensor_data/test.csv
+      hash: md5
+      md5: 2d9718fa6384cd5f1a0d769e304992c3
+      size: 245859
+    - path: data/sensor_data/train.csv
+      hash: md5
+      md5: 8a40343f4746c8babd2dd93e1a1e6438
+      size: 984840

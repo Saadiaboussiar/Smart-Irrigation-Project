@@ -1,0 +1,10 @@
+stages:
+  prepare:
+    cmd: python preprocessing/prepare.py
+    deps:
+      - preprocessing/prepare.py
+      - data/irrigation_prediction.csv
+    outs:
+      - data/sensor_data/train.csv
+      - data/sensor_data/test.csv
+      - data/sensor_data/encoders.json
