@@ -1,0 +1,16 @@
+# environments
+mlflow-env/
+tf-env/
+
+# mlflow
+mlruns/
+mlflow.db
+
+# model artifacts
+mlp_model_config.json
+mlp_model.keras
+mlp_scaler.pkl
+
+# auto-generated
+.ipynb_checkpoints/
+__pycache__/
