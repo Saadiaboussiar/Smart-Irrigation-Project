@@ -1,0 +1,44 @@
+project:
+  name: "Smart-irrigation-project"
+  random_state: 42
+  test_size: 0.2
+  target_column: "besoin_eau"
+
+data:
+  smote: true
+  scaler: "StandardScaler"
+  selected_features:
+    - "Soil_Moisture"
+    - "Crop_Growth_Stage"
+    - "sol_chaud_sec"
+    - "Mulching_Used"
+    - "Wind_Speed_kmh"
+    - "Rainfall_mm"
+    - "Temperature_C"
+
+mlflow:
+  experiment_name: "ml_experiments"
+
+models:
+  mlp:
+    # architecture
+    hidden_layers: [32, 16, 8]
+    activation: "relu"
+    output_activation: "sigmoid"
+    dropout_rates: [0.4, 0.3, 0.2]
+    batch_normalization: true
+
+    # training
+    optimizer: "adam"
+    loss: "binary_crossentropy"
+    epochs: 100
+    batch_size: 32
+    validation_split: 0.2
+
+    # early stopping
+    early_stopping:
+      monitor: "val_loss"
+      patience: 10      
+
+    # prediction
+    threshold: 0.40
