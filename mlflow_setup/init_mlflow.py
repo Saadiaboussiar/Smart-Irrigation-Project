@@ -7,7 +7,7 @@ load_dotenv()
 
 def init_mlflow():
     # ✅ Authentification correcte
-    os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("DAGSHUB_USERNAME")      # yass031
+    os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("DAGSHUB_USERNAME")      # 
     os.environ["MLFLOW_TRACKING_PASSWORD"] = os.getenv("DAGSHUB_USER_TOKEN")    # ton token
 
     dagshub.init(
