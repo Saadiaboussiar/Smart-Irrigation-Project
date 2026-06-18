@@ -42,9 +42,9 @@ best_run = runs.iloc[0]
 
 model_name = best_run["params.model_type"]
 
-print("Model Type:", model_name)
 print("BEST MODEL FOUND:")
 print("Run ID:", best_run.run_id)
+print("Model Type:", model_name)
 print("Recall:", best_run["metrics.recall_pos"])
 print("F1:", best_run["metrics.f1"])
 print("AUC:", best_run["metrics.roc_auc"])
@@ -52,13 +52,13 @@ print("AUC:", best_run["metrics.roc_auc"])
 # =========================
 # LOAD BEST MODEL
 # =========================
-model_uri = f"runs:/{best_run.run_id}/model"
-best_model = mlflow.pyfunc.load_model(model_uri)
 
-# =========================
-# REGISTER AS PRODUCTION
-# =========================
-mlflow.register_model(
-    model_uri,
-    name="SmartIrrigationModel"
+from mlflow.tracking import MlflowClient
+client = MlflowClient()
+# Enregistrer le modèle en Production
+client.transition_model_version_stage(
+name="XGBoost_model",
+version=6,
+stage="Production"
 )
+print(" Modèle xgboost en Production sur DagsHub !")
