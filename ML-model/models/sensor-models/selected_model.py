@@ -5,13 +5,6 @@ import os
 from dotenv import load_dotenv
 import mlflow.pyfunc
 
-# =========================
-# LOAD CONFIG (BEST PRACTICE)
-# =========================
-with open("params_config.yaml", "r") as f:
-    config = yaml.safe_load(f)
-
-EXP_NAME = config["mlflow"]["experiment_name"]
 
 # =========================
 # MLflow setup
@@ -19,13 +12,14 @@ EXP_NAME = config["mlflow"]["experiment_name"]
 load_dotenv()
 
 mlflow.set_tracking_uri(
-    f"https://dagshub.com/{os.getenv('DAGSHUB_USERNAME')}/{os.getenv('DAGSHUB_REPO_NAME')}.mlflow"
+    f"https://dagshub.com/{os.getenv('DAGSHUB_REPO_OWNER')}/{os.getenv('DAGSHUB_REPO_NAME')}.mlflow"
 )
 
-exp = mlflow.get_experiment_by_name(EXP_NAME)
+MLFLOW_EXPERIMENT_NAME = os.getenv("MLFLOW_EXPERIMENT_NAME")
+exp = mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME)
 
 if exp is None:
-    raise ValueError(f"Experiment '{EXP_NAME}' not found")
+    raise ValueError(f"Experiment '{MLFLOW_EXPERIMENT_NAME}' not found")
 
 # =========================
 # GET RUNS
@@ -46,6 +40,9 @@ runs = runs.sort_values(
 
 best_run = runs.iloc[0]
 
+model_name = best_run["params.model_type"]
+
+print("Model Type:", model_name)
 print("BEST MODEL FOUND:")
 print("Run ID:", best_run.run_id)
 print("Recall:", best_run["metrics.recall_pos"])
