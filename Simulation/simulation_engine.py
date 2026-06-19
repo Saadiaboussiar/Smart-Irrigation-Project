@@ -183,6 +183,13 @@ class SimulationEngine:
             probabilite = result.get("probabilite", "N/A")
             label       = result.get("label", "")
 
+            # stocker aussi dans /zones
+            requests.post("http://localhost:8000/zones/update", json={
+                            "zone_id": metadata["zone_id"],
+                            "crop_type": metadata["crop_type"],
+                            "result": result,
+                            "features": features
+                            })
             decision = "💧 IRRIGATE" if besoin_eau == 1 else "✅ No irrigation"
 
             print(
