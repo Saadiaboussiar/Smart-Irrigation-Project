@@ -17,7 +17,7 @@ from sugarcane_zone  import SugarcaneZone
 # CONFIG
 # =====================================================================
 
-UPDATE_INTERVAL_SECONDS = 900           # 15 minutes
+UPDATE_INTERVAL_SECONDS = 20           # 15 minutes
 BACKEND_URL = "http://localhost:8000/predict"
 
 # Path to the encoders.json produced by prepare.py
@@ -188,7 +188,8 @@ class SimulationEngine:
                             "zone_id": metadata["zone_id"],
                             "crop_type": metadata["crop_type"],
                             "result": result,
-                            "features": features
+                            "features": features,
+                            "prediction_id": result.get("prediction_id") 
                             })
             decision = "💧 IRRIGATE" if besoin_eau == 1 else "✅ No irrigation"
 

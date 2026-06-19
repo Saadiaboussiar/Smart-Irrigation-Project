@@ -2,7 +2,7 @@ import pandas as pd
 from pydantic import BaseModel
 from water_calculator import calculate_water_quantity
 import uuid
-from prediction_store import prediction_store
+from prediction_store import save_prediction
 from datetime import datetime
 
 
@@ -67,10 +67,7 @@ def predict_irrigation(data: SensorData, model):
     prediction_id = str(uuid.uuid4())
 
     # Sauvegarder la prédiction dans le stockage temporaire
-    prediction_store[prediction_id] = {
-
-        "timestamp": datetime.now(),
-
+    save_prediction(prediction_id, {
         "features": {
             "Soil_Moisture": data.Soil_Moisture,
             "Crop_Growth_Stage": data.Crop_Growth_Stage,
@@ -80,15 +77,8 @@ def predict_irrigation(data: SensorData, model):
             "Rainfall_mm": data.Rainfall_mm,
             "Temperature_C": data.Temperature_C,
         },
-
         "prediction": int(prediction),
-
-        "label": response["label"],
-
-        "probabilite": round(float(probability), 4),
-
-        "irrigation": water_info
-    }
+    })
 
     # Ajouter l'identifiant dans la réponse envoyée au frontend
     response["prediction_id"] = prediction_id

@@ -3,9 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from predict import SensorData, predict_irrigation
 from model_loader import load_model
 from image_predictor import load_image_model, predict_image
+
 from water_calculator import calculate_water_quantity
 from feedback import FeedbackRequest
-from prediction_store import prediction_store
+from prediction_store import get_prediction
 from feedback_logger import save_feedback
 
 # ─── Initialisation FastAPI ──────────────────────────────────────────────────
@@ -24,11 +25,14 @@ app.add_middleware(
 )
 
 # ─── Chargement des modèles au démarrage ────────────────────────────────────
-print("🔄 Chargement du modèle RF depuis MLflow...")
+print("🔄 Chargement du modèle XGBoost depuis MLflow...")
 model = load_model()
 
-print("🔄 Chargement du modèle EfficientNet depuis MLflow...")
-load_image_model()
+# après load_model()
+print("🔄 Chargement du modèle EfficientNet...")
+image_model = load_image_model()
+
+
 
 # ─── ENDPOINTS ───────────────────────────────────────────────────────────────
 
@@ -38,8 +42,11 @@ def root():
         "message"  : "Smart Irrigation API ✅",
         "version"  : "2.0.0",
         "endpoints": {
-            "POST /predict"      : "Prédiction via données capteurs (7 features)",
-            "POST /predict/image": "Prédiction via image de plante (JPEG/PNG)",
+            "POST /predict"       : "Prédiction via données capteurs (7 features)",
+            "POST /predict-image" : "Prédiction via photo de plante (EfficientNet)",
+            "POST /feedback"      : "Enregistrer feedback utilisateur",
+            "POST /zones/update"  : "Mise à jour zone simulation",
+            "GET  /zones"         : "Voir toutes les zones simulation",
         }
     }
 
@@ -60,73 +67,52 @@ def predict(data: SensorData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+zones_results = {}
 
-@app.post("/predict/image")
-async def predict_image_endpoint(file: UploadFile = File(...)):
-    """
-    Prédit si une plante a besoin d'eau à partir d'une image.
+@app.post("/zones/update")
+def update_zone(data: dict):
+    zone_id = data["zone_id"]
+    zones_results[zone_id] = data
+    return {"message": "ok"}
 
-    - Envoyer une image JPEG ou PNG en multipart/form-data (clé : `file`)
-    - **besoin_eau** : 0 = healthy, 1 = needs-water
-    - **label** : résultat en texte
-    - **probabilite** : confiance du modèle
-    - **irrigation** : quantité FAO Blaney-Criddle (seulement si besoin_eau = 1,
-                       avec valeurs météo par défaut — Maroc/zones arides)
-    """
-    # Vérification du type MIME
-    if file.content_type not in ("image/jpeg", "image/jpg", "image/png"):
-        raise HTTPException(
-            status_code=400,
-            detail="Format non supporté. Envoyer une image JPEG ou PNG."
-        )
+@app.get("/zones")
+def get_zones():
+    return zones_results
 
-    try:
-        image_bytes = await file.read()
-        result = predict_image(image_bytes)
 
-        # Si la plante a besoin d'eau → calcul FAO avec valeurs par défaut
-        # (pas de capteurs disponibles dans ce mode)
-        if result["besoin_eau"] == 1:
-            water_info = calculate_water_quantity(
-                temperature_c     = 28.0,   # température moyenne Maroc été
-                rainfall_mm       = 0.0,    # pas de pluie par défaut
-                crop_growth_stage = 3.0,    # mi-saison (pic besoin eau)
-                soil_moisture     = 30.0,   # sol sec
-                sol_chaud_sec     = 1.0,    # sol chaud et sec
-                mulching_used     = 0.0,
-                wind_speed_kmh    = 15.0,
-            )
-            result["irrigation"] = water_info
-
-        return result
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/feedback")
 def receive_feedback(request: FeedbackRequest):
 
-    if request.prediction_id not in prediction_store:
-
+    prediction = get_prediction(request.prediction_id)
+    
+    if prediction is None:
         raise HTTPException(
             status_code=404,
             detail="Prediction ID introuvable."
         )
 
-    prediction = prediction_store[request.prediction_id]
-
     save_feedback(
-
         prediction_id=request.prediction_id,
-
         prediction_data=prediction,
-
-        feedback=request.feedback,
-
-        comment=request.comment
-
     )
 
     return {
         "message": "Feedback enregistré avec succès."
     }
+
+
+@app.post("/predict-image")
+async def predict_from_image(file: UploadFile = File(...)):
+    """
+    Prédit si une plante a besoin d'eau à partir d'une photo.
+    - **besoin_eau** : 0 = saine, 1 = besoin eau
+    - **label** : résultat en texte
+    - **probabilite** : confiance du modèle
+    """
+    try:
+        image_bytes = await file.read()
+        result = predict_image(image_bytes)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

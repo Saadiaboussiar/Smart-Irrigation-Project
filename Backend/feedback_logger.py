@@ -5,7 +5,7 @@ CSV_FOLDER = "feedback_data"
 CSV_FILE = os.path.join(CSV_FOLDER, "feedback.csv")
 
 
-def save_feedback(prediction_id, prediction_data, feedback, comment):
+def save_feedback(prediction_id, prediction_data):
 
     os.makedirs(CSV_FOLDER, exist_ok=True)
 
@@ -19,9 +19,6 @@ def save_feedback(prediction_id, prediction_data, feedback, comment):
         if not file_exists:
 
             writer.writerow([
-                "timestamp",
-                "prediction_id",
-
                 "Soil_Moisture",
                 "Crop_Growth_Stage",
                 "sol_chaud_sec",
@@ -29,22 +26,16 @@ def save_feedback(prediction_id, prediction_data, feedback, comment):
                 "Wind_Speed_kmh",
                 "Rainfall_mm",
                 "Temperature_C",
+                "besoin_eau"
 
-                "prediction",
-                "label",
-                "probabilite",
 
-                "feedback",
-                "comment"
             ])
 
         features = prediction_data["features"]
 
         writer.writerow([
 
-            prediction_data["timestamp"],
 
-            prediction_id,
 
             features["Soil_Moisture"],
             features["Crop_Growth_Stage"],
@@ -54,11 +45,6 @@ def save_feedback(prediction_id, prediction_data, feedback, comment):
             features["Rainfall_mm"],
             features["Temperature_C"],
 
-            prediction_data["prediction"],
-            prediction_data["label"],
-            prediction_data["probabilite"],
-
-            feedback,
-            comment
+            1 - prediction_data["prediction"]
 
         ])
