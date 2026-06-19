@@ -1,0 +1,5 @@
+outs:
+- md5: 58485dcbf7141758435b9ac20b9bc200
+  size: 19032380
+  hash: md5
+  path: efficientnet_irrigation.keras
