@@ -9,6 +9,9 @@ from feedback import FeedbackRequest
 from prediction_store import get_prediction
 from feedback_logger import save_feedback
 
+import json
+import os
+
 # ─── Initialisation FastAPI ──────────────────────────────────────────────────
 app = FastAPI(
     title="Smart Irrigation API",
@@ -20,17 +23,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
     allow_credentials=True,
-    allow_methods=["POST"],
+    allow_methods=["POST","GET"],
     allow_headers=["Content-Type"],
 )
 
 # ─── Chargement des modèles au démarrage ────────────────────────────────────
 print("🔄 Chargement du modèle XGBoost depuis MLflow...")
 model = load_model()
-
-# après load_model()
-print("🔄 Chargement du modèle EfficientNet...")
-image_model = load_image_model()
 
 
 
@@ -102,17 +101,3 @@ def receive_feedback(request: FeedbackRequest):
     }
 
 
-@app.post("/predict-image")
-async def predict_from_image(file: UploadFile = File(...)):
-    """
-    Prédit si une plante a besoin d'eau à partir d'une photo.
-    - **besoin_eau** : 0 = saine, 1 = besoin eau
-    - **label** : résultat en texte
-    - **probabilite** : confiance du modèle
-    """
-    try:
-        image_bytes = await file.read()
-        result = predict_image(image_bytes)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
