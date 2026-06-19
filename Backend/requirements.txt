@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+mlflow
+scikit-learn
+python-dotenv
+pydantic
+dagshub
