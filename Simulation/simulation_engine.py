@@ -188,7 +188,8 @@ class SimulationEngine:
                             "zone_id": metadata["zone_id"],
                             "crop_type": metadata["crop_type"],
                             "result": result,
-                            "features": features
+                            "features": features,
+                            "prediction_id": result.get("prediction_id")
                             })
             decision = "💧 IRRIGATE" if besoin_eau == 1 else "✅ No irrigation"
 
