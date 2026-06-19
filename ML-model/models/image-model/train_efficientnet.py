@@ -1,11 +1,13 @@
 import os
 import mlflow
-import mlflow.keras
+import dagshub
 import tensorflow as tf
 from tensorflow.keras.applications import EfficientNetB0
 from tensorflow.keras import layers, Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+
+dagshub.init(repo_owner="Saadiaboussiar", repo_name="Smart-Irrigation-Project", mlflow=True)
 
 BASE_DIR   = "/Users/maounouissal/Documents/Smart-Irrigation-Project/ML-model"
 TRAIN_DIR  = BASE_DIR + "/data/images/train/"
@@ -17,7 +19,6 @@ BATCH_SIZE  = 32
 EPOCHS      = 15
 
 print("Chargement des images...")
-
 train_gen = ImageDataGenerator(rescale=1./255, rotation_range=20, horizontal_flip=True)
 val_gen   = ImageDataGenerator(rescale=1./255)
 
@@ -39,9 +40,6 @@ out = layers.Dense(NUM_CLASSES, activation="softmax")(x)
 model = Model(inputs=base.input, outputs=out)
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
-import dagshub
-dagshub.init(repo_owner="Saadiaboussiar", repo_name="Smart-Irrigation-Project", mlflow=True)
-mlflow.set_tracking_uri("https://dagshub.com/Saadiaboussiar/Smart-Irrigation-Project.mlflow")
 mlflow.set_experiment("EfficientNet-SmartIrrigation")
 
 with mlflow.start_run(run_name="EfficientNetB0") as run:
@@ -49,7 +47,7 @@ with mlflow.start_run(run_name="EfficientNetB0") as run:
 
     callbacks = [
         EarlyStopping(monitor="val_accuracy", patience=4, restore_best_weights=True),
-        ModelCheckpoint(MODEL_DIR + "best_model.h5", monitor="val_accuracy", save_best_only=True)
+        ModelCheckpoint(MODEL_DIR + "best_model.keras", monitor="val_accuracy", save_best_only=True)
     ]
 
     history = model.fit(train_data, validation_data=val_data, epochs=EPOCHS, callbacks=callbacks)
@@ -61,10 +59,14 @@ with mlflow.start_run(run_name="EfficientNetB0") as run:
     best_acc = max(history.history["val_accuracy"])
     mlflow.log_metric("best_val_accuracy", round(best_acc, 4))
 
-    model.save(MODEL_DIR + "efficientnet_irrigation.h5")
-    mlflow.keras.log_model(model, artifact_path="image-model")
-    mlflow.register_model(model_uri=f"runs:/{run.info.run_id}/image-model", name="SmartIrrigation-ImageModel")
+    # Sauvegarde locale seulement
+    model.save(MODEL_DIR + "efficientnet_irrigation.keras")
 
     print(f"\nPrecision : {best_acc*100:.2f}%")
     print(f"Run ID    : {run.info.run_id}")
-    print("Modele enregistre dans MLflow Model Registry OK")
+    print("Run enregistre dans MLflow OK ✅")
+mlflow.keras.log_model(
+    model,
+    artifact_path="image-model",
+    registered_model_name="SmartIrrigation-ImageModel"
+)
