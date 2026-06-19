@@ -1,6 +1,9 @@
 import pandas as pd
 from pydantic import BaseModel
 from water_calculator import calculate_water_quantity
+import uuid
+from prediction_store import save_prediction
+from datetime import datetime
 
 
 # Schema des données d'entrée — les 7 features du params_config.yaml
@@ -58,5 +61,26 @@ def predict_irrigation(data: SensorData, model):
     # Ajouter le calcul d'eau seulement si besoin = 1
     if water_info:
         response["irrigation"] = water_info
+
+
+    # Générer un identifiant unique pour cette prédiction
+    prediction_id = str(uuid.uuid4())
+
+    # Sauvegarder la prédiction dans le stockage temporaire
+    save_prediction(prediction_id, {
+        "features": {
+            "Soil_Moisture": data.Soil_Moisture,
+            "Crop_Growth_Stage": data.Crop_Growth_Stage,
+            "sol_chaud_sec": data.sol_chaud_sec,
+            "Mulching_Used": data.Mulching_Used,
+            "Wind_Speed_kmh": data.Wind_Speed_kmh,
+            "Rainfall_mm": data.Rainfall_mm,
+            "Temperature_C": data.Temperature_C,
+        },
+        "prediction": int(prediction),
+    })
+
+    # Ajouter l'identifiant dans la réponse envoyée au frontend
+    response["prediction_id"] = prediction_id
 
     return response

@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+feedback_data/
+Backend/prediction_store.json
