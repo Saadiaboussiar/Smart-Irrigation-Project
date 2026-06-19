@@ -27,9 +27,8 @@ def load_model():
     tracking_uri = f"https://dagshub.com/{dagshub_owner}/{dagshub_repo}.mlflow"
     mlflow.set_tracking_uri(tracking_uri)
     print(f"🔗 URI : {tracking_uri}")
+    
 
-    # ✅ Version 1 — pas Production
-    model = mlflow.sklearn.load_model("models:/random_forest_model/1")
-    print("✅ Modèle RF chargé !")
+    model = mlflow.xgboost.load_model("models:/XGBoost_model/7")
 
     return model

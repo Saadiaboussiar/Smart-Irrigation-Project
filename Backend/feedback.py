@@ -6,6 +6,3 @@ class FeedbackRequest(BaseModel):
 
     prediction_id: str
 
-    feedback: str
-
-    comment: Optional[str] = ""
