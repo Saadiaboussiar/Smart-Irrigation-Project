@@ -13,7 +13,7 @@ def load_model():
 
     dagshub_owner = os.getenv("DAGSHUB_REPO_OWNER")   # Saadiaboussiar
     dagshub_repo  = os.getenv("DAGSHUB_REPO_NAME")    # Smart-Irrigation-Project
-    dagshub_user  = os.getenv("DAGSHUB_USERNAME")     # yass031
+    dagshub_user  = os.getenv("DAGSHUB_USERNAME")     # yassmine oukhris
     dagshub_token = os.getenv("DAGSHUB_USER_TOKEN")   # ton token
 
     # Prints de vérification
