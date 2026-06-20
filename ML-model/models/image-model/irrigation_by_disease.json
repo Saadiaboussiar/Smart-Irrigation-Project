@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "Tomato Blight": {
+      "irrigation": "LOW",
+      "reason": "Reduce leaf wetness to control disease"
+    },
+    "Tomato Leaf Mold": {
+      "irrigation": "LOW",
+      "reason": "Avoid high humidity"
+    },
+    "Beans Rust": {
+      "irrigation": "LOW",
+      "reason": "Fungal disease risk increases with moisture"
+    }
+  },
+  "default": {
+    "irrigation": "NORMAL",
+    "reason": "No disease detected"
+  }
+}

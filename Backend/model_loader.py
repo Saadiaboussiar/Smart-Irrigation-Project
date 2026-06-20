@@ -7,13 +7,13 @@ from pathlib import Path
 def load_model():
 
     load_dotenv(
-        dotenv_path=Path('C:/Users/user/Desktop/Smart-Irrigation-Project/mlflow_setup/.env'),
+        dotenv_path=Path('E:/Smart-Irrigation-Project/mlflow_setup/.env'),
         override=True
     )
 
     dagshub_owner = os.getenv("DAGSHUB_REPO_OWNER")   # Saadiaboussiar
     dagshub_repo  = os.getenv("DAGSHUB_REPO_NAME")    # Smart-Irrigation-Project
-    dagshub_user  = os.getenv("DAGSHUB_USERNAME")     # yass031
+    dagshub_user  = os.getenv("DAGSHUB_USERNAME")     # yassmine oukhris
     dagshub_token = os.getenv("DAGSHUB_USER_TOKEN")   # ton token
 
     # Prints de vérification

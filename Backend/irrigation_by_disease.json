@@ -1,0 +1,56 @@
+{
+  "rules": {
+    "Beans Angular LeafSpot": {
+      "irrigation": "LOW",
+      "reason": "Reduce moisture to slow bacterial spread"
+    },
+    "Beans Rust": {
+      "irrigation": "LOW",
+      "reason": "Fungal disease risk increases with moisture"
+    },
+    "Strawberry Angular LeafSpot": {
+      "irrigation": "LOW",
+      "reason": "Avoid overhead watering to limit bacterial spread"
+    },
+    "Strawberry Anthracnose Fruit Rot": {
+      "irrigation": "LOW",
+      "reason": "Reduce fruit wetness to prevent rot"
+    },
+    "Strawberry Blossom Blight": {
+      "irrigation": "LOW",
+      "reason": "Reduce humidity around blossoms"
+    },
+    "Strawberry Gray Mold": {
+      "irrigation": "LOW",
+      "reason": "Botrytis spreads rapidly in wet conditions"
+    },
+    "Strawberry Leaf Spot": {
+      "irrigation": "LOW",
+      "reason": "Avoid leaf wetness to control fungal spread"
+    },
+    "Strawberry Powdery Mildew Fruit": {
+      "irrigation": "LOW",
+      "reason": "Powdery mildew thrives in humid conditions"
+    },
+    "Strawberry Powdery Mildew Leaf": {
+      "irrigation": "LOW",
+      "reason": "Reduce humidity to limit mildew progression"
+    },
+    "Tomato Blight": {
+      "irrigation": "LOW",
+      "reason": "Reduce leaf wetness to control disease"
+    },
+    "Tomato Leaf Mold": {
+      "irrigation": "LOW",
+      "reason": "Avoid high humidity"
+    },
+    "Tomato Spider Mites": {
+      "irrigation": "HIGH",
+      "reason": "Spider mites thrive in dry conditions, increase watering"
+    }
+  },
+  "default": {
+    "irrigation": "NORMAL",
+    "reason": "No disease detected"
+  }
+}
