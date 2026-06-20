@@ -9,10 +9,6 @@ from feedback import FeedbackRequest
 from prediction_store import get_prediction
 from feedback_logger import save_feedback
 
-<<<<<<< HEAD
-import json
-import os
-=======
 # ─── Modèles globaux ─────────────────────────────────────────────────────────
 model       = None
 image_model = None
@@ -39,7 +35,6 @@ async def lifespan(app: FastAPI):
 
     print("🛑 Arrêt de l'API")
 
->>>>>>> 6346a2f0d07eeeae8ffdcef86f553d7a0ca72062
 
 # ─── Initialisation FastAPI ──────────────────────────────────────────────────
 app = FastAPI(
@@ -55,19 +50,6 @@ app = FastAPI(
 # exacte des origines autorisées (ex: ton domaine frontend).
 app.add_middleware(
     CORSMiddleware,
-<<<<<<< HEAD
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["POST","GET"],
-    allow_headers=["Content-Type"],
-)
-
-# ─── Chargement des modèles au démarrage ────────────────────────────────────
-print("🔄 Chargement du modèle XGBoost depuis MLflow...")
-model = load_model()
-
-
-=======
     allow_origins=["*"],
     allow_credentials=False,   # ✅ cohérent avec allow_origins=["*"]
     allow_methods=["*"],
@@ -75,7 +57,6 @@ model = load_model()
 )
 
 zones_results = {}
->>>>>>> 6346a2f0d07eeeae8ffdcef86f553d7a0ca72062
 
 # ─── ENDPOINTS ───────────────────────────────────────────────────────────────
 
@@ -127,8 +108,6 @@ def receive_feedback(request: FeedbackRequest):
     return {"message": "Feedback enregistré avec succès."}
 
 
-<<<<<<< HEAD
-=======
 @app.post("/predict-image")
 async def predict_from_image(file: UploadFile = File(...)):
     """
@@ -151,4 +130,3 @@ async def predict_from_image(file: UploadFile = File(...)):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
->>>>>>> 6346a2f0d07eeeae8ffdcef86f553d7a0ca72062

@@ -61,8 +61,13 @@ def load_image_model():
     
 
     local_path = mlflow.artifacts.download_artifacts(model_uri)
-    model_keras_path = os.path.join(local_path, "data", "model.keras")
+    model_keras_path = str(BASE_DIR / "model_fixed.keras")
+
+    if not os.path.exists(model_keras_path):
+        raise FileNotFoundError("Lance fix_model.py d'abord !")
+    
     image_model = tf.keras.models.load_model(model_keras_path)
+
     print("✅ Modèle EfficientNetB0 chargé depuis MLflow !")
 
     # ─── Classes JSON ────────────────────────────────────────────────────────

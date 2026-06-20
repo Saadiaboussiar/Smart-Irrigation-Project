@@ -38,7 +38,7 @@ async function predictWaterNeed(formData) {
 async function scanPlantImage(imageFile) {
   const formData = new FormData();
   formData.append("file", imageFile);
-  const response = await fetch(`${API_BASE_URL}/scan`, {
+  const response = await fetch(`${API_BASE_URL}/predict-image`, {
     method: "POST",
     body: formData,
   });

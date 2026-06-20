@@ -7,7 +7,7 @@ from pathlib import Path
 def load_model():
 
     load_dotenv(
-        dotenv_path=Path('E:\Smart-Irrigation-Project/mlflow_setup/.env'),
+        dotenv_path=Path('E:/Smart-Irrigation-Project/mlflow_setup/.env'),
         override=True
     )
 
